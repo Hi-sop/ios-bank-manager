@@ -35,6 +35,16 @@ class ViewController: UIViewController {
         ])
     }
     
+    func makeButton(text: String, color: UIColor) -> UIButton {
+        let newButton = UIButton()
+        
+        newButton.setTitle(text, for: .normal)
+        newButton.setTitleColor(color, for: .normal)
+        newButton.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        
+        return newButton
+    }
+    
     func initButtonStackView() {
         let ButtonStackView = UIStackView()
         ButtonStackView.axis = .horizontal
@@ -42,15 +52,8 @@ class ViewController: UIViewController {
         ButtonStackView.distribution = .equalSpacing
         ButtonStackView.spacing = 120
 
-        let addCustomerButton = UIButton()
-        addCustomerButton.setTitle("고객 10명 추가", for: .normal)
-        addCustomerButton.setTitleColor(UIColor.systemBlue, for: .normal)
-        addCustomerButton.titleLabel?.font = UIFont.systemFont(ofSize: 16)
-        
-        let resetButton = UIButton()
-        resetButton.setTitle("초기화", for: .normal)
-        resetButton.setTitleColor(UIColor.systemRed, for: .normal)
-        resetButton.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        let addCustomerButton = makeButton(text: "고객 10명 추가", color: UIColor.systemBlue)
+        let resetButton = makeButton(text: "초기화", color: UIColor.systemRed)
  
         ButtonStackView.addArrangedSubview(addCustomerButton)
         ButtonStackView.addArrangedSubview(resetButton)
@@ -66,7 +69,7 @@ class ViewController: UIViewController {
         mainStackView.addArrangedSubview(workTimeLable)
     }
     
-    func titleLabel(text: String, color: UIColor) -> UILabel {
+    func makeTitleLabel(text: String, color: UIColor) -> UILabel {
         let newLabel = UILabel()
         newLabel.text = text
         newLabel.textColor = UIColor.white
@@ -82,8 +85,8 @@ class ViewController: UIViewController {
         waitingStackView.alignment = .center
         waitingStackView.distribution = .fillEqually
 
-        let waitingLabel = titleLabel(text: "대기중", color: UIColor.systemGreen)
-        let workingLabel = titleLabel(text: "업무중", color: UIColor.systemIndigo)
+        let waitingLabel = makeTitleLabel(text: "대기중", color: UIColor.systemGreen)
+        let workingLabel = makeTitleLabel(text: "업무중", color: UIColor.systemIndigo)
         
         waitingStackView.addArrangedSubview(waitingLabel)
         waitingStackView.addArrangedSubview(workingLabel)
