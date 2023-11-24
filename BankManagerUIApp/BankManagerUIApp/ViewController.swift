@@ -66,25 +66,24 @@ class ViewController: UIViewController {
         mainStackView.addArrangedSubview(workTimeLable)
     }
     
+    func titleLabel(text: String, color: UIColor) -> UILabel {
+        let newLabel = UILabel()
+        newLabel.text = text
+        newLabel.textColor = UIColor.white
+        newLabel.font = UIFont.systemFont(ofSize: 35)
+        newLabel.backgroundColor = color
+        newLabel.textAlignment = .center
+        return newLabel
+    }
+    
     func initWaitingStackView() {
         let waitingStackView = UIStackView()
         waitingStackView.axis = .horizontal
         waitingStackView.alignment = .center
         waitingStackView.distribution = .fillEqually
 
-        let waitingLabel = UILabel()
-        waitingLabel.text = "대기중"
-        waitingLabel.textColor = UIColor.white
-        waitingLabel.font = UIFont.systemFont(ofSize: 35)
-        waitingLabel.backgroundColor = UIColor.systemGreen
-        waitingLabel.textAlignment = .center
-        
-        let workingLabel = UILabel()
-        workingLabel.text = "업무중"
-        workingLabel.textColor = UIColor.white
-        workingLabel.font = UIFont.systemFont(ofSize: 35)
-        workingLabel.backgroundColor = UIColor.systemIndigo
-        workingLabel.textAlignment = .center
+        let waitingLabel = titleLabel(text: "대기중", color: UIColor.systemGreen)
+        let workingLabel = titleLabel(text: "업무중", color: UIColor.systemIndigo)
         
         waitingStackView.addArrangedSubview(waitingLabel)
         waitingStackView.addArrangedSubview(workingLabel)
