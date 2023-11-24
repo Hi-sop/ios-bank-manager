@@ -16,6 +16,7 @@ class ViewController: UIViewController {
         initMainStackView()
         initButtonStackView()
         initWorkTimeLabel()
+        initWaitingStackView()
     }
 
     func initMainStackView() {
@@ -29,7 +30,6 @@ class ViewController: UIViewController {
         
         NSLayoutConstraint.activate([
             mainStackView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 0),
-            //mainStackView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: 0),
             mainStackView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
             mainStackView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor)
         ])
@@ -66,8 +66,35 @@ class ViewController: UIViewController {
         mainStackView.addArrangedSubview(workTimeLable)
     }
     
-    func initWaitingTitle() {
+    func initWaitingStackView() {
+        let waitingStackView = UIStackView()
+        waitingStackView.axis = .horizontal
+        waitingStackView.alignment = .center
+        waitingStackView.distribution = .fillEqually
+
+        let waitingLabel = UILabel()
+        waitingLabel.text = "대기중"
+        waitingLabel.textColor = UIColor.white
+        waitingLabel.font = UIFont.systemFont(ofSize: 35)
+        waitingLabel.backgroundColor = UIColor.systemGreen
+        waitingLabel.textAlignment = .center
         
+        let workingLabel = UILabel()
+        workingLabel.text = "업무중"
+        workingLabel.textColor = UIColor.white
+        workingLabel.font = UIFont.systemFont(ofSize: 35)
+        workingLabel.backgroundColor = UIColor.systemIndigo
+        workingLabel.textAlignment = .center
+        
+        waitingStackView.addArrangedSubview(waitingLabel)
+        waitingStackView.addArrangedSubview(workingLabel)
+        
+        mainStackView.addArrangedSubview(waitingStackView)
+        
+        NSLayoutConstraint.activate([
+            waitingStackView.leadingAnchor.constraint(equalTo: mainStackView.leadingAnchor),
+            waitingStackView.trailingAnchor.constraint(equalTo: mainStackView.trailingAnchor)
+        ])
     }
 }
 
