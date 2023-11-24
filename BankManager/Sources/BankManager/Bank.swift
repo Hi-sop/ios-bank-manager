@@ -71,7 +71,7 @@ public final class Bank {
    }
     
     private func addCustomer() {
-        let count = Int.random(in: 10...30)
+        let count: Int = 10
         for number in 1...count {
             customerQueue.enqueue(value: Customer(number: number))
         }

@@ -8,8 +8,14 @@ import UIKit
 import BankManager
 
 class ViewController: UIViewController {
+    private var bankManager = BankManager(bankName: "Hisop")
     private var mainStackView = UIStackView()
+    private var waitingStackView = UIStackView()
+    private var workingStackView = UIStackView()
     
+    private var workTimeLable = UILabel()
+    private var workTime: Double = 0
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -54,7 +60,10 @@ class ViewController: UIViewController {
 
         let addCustomerButton = makeButton(text: "고객 10명 추가", color: UIColor.systemBlue)
         let resetButton = makeButton(text: "초기화", color: UIColor.systemRed)
- 
+
+        addCustomerButton.addTarget(self, action: #selector(touchUpInsideAddCustomer), for: .touchUpInside)
+        resetButton.addTarget(self, action: #selector(touchUpInsideReset), for: .touchUpInside)
+        
         ButtonStackView.addArrangedSubview(addCustomerButton)
         ButtonStackView.addArrangedSubview(resetButton)
         
@@ -66,8 +75,17 @@ class ViewController: UIViewController {
         ])
     }
     
+    @objc
+    private func touchUpInsideAddCustomer() {
+        print("Add")
+    }
+    
+    @objc
+    private func touchUpInsideReset() {
+        print("Reset")
+    }
+    
     private func initWorkTimeLabel() {
-        let workTimeLable = UILabel()
         workTimeLable.text = "업무 시간 - 00:00:000"
         workTimeLable.font = UIFont.systemFont(ofSize: 20)
         
@@ -104,11 +122,12 @@ class ViewController: UIViewController {
         ])
     }
     
-    private func makeCustomerStackView() -> UIStackView {
-        let newCustomerStackView = UIStackView()
-        newCustomerStackView.axis = .vertical
-        newCustomerStackView.alignment = .center
-        return newCustomerStackView
+    private func initStackView() {
+        waitingStackView.axis = .vertical
+        workingStackView.axis = .vertical
+        
+        waitingStackView.alignment = .center
+        workingStackView.alignment = .center
     }
     
     private func initCustomerStackView() {
@@ -117,12 +136,8 @@ class ViewController: UIViewController {
         customerStackView.alignment = .center
         customerStackView.distribution = .fillEqually
         
-        let waitingStackView = makeCustomerStackView()
-        let tempLabel = UILabel()
-        tempLabel.text = "test"
-        waitingStackView.addArrangedSubview(tempLabel)
+        initStackView()
         
-        let workingStackView = makeCustomerStackView()
         customerStackView.addArrangedSubview(waitingStackView)
         customerStackView.addArrangedSubview(workingStackView)
         
