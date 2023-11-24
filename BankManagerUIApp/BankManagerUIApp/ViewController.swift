@@ -17,9 +17,10 @@ class ViewController: UIViewController {
         initButtonStackView()
         initWorkTimeLabel()
         initWaitingStackView()
+        initCustomerStackView()
     }
 
-    func initMainStackView() {
+    private func initMainStackView() {
         mainStackView.axis = .vertical
         mainStackView.alignment = .center
         mainStackView.distribution = .fill
@@ -35,7 +36,7 @@ class ViewController: UIViewController {
         ])
     }
     
-    func makeButton(text: String, color: UIColor) -> UIButton {
+    private func makeButton(text: String, color: UIColor) -> UIButton {
         let newButton = UIButton()
         
         newButton.setTitle(text, for: .normal)
@@ -45,12 +46,11 @@ class ViewController: UIViewController {
         return newButton
     }
     
-    func initButtonStackView() {
+    private func initButtonStackView() {
         let ButtonStackView = UIStackView()
         ButtonStackView.axis = .horizontal
         ButtonStackView.alignment = .center
-        ButtonStackView.distribution = .equalSpacing
-        ButtonStackView.spacing = 120
+        ButtonStackView.distribution = .fillEqually
 
         let addCustomerButton = makeButton(text: "고객 10명 추가", color: UIColor.systemBlue)
         let resetButton = makeButton(text: "초기화", color: UIColor.systemRed)
@@ -59,9 +59,14 @@ class ViewController: UIViewController {
         ButtonStackView.addArrangedSubview(resetButton)
         
         mainStackView.addArrangedSubview(ButtonStackView)
+        
+        NSLayoutConstraint.activate([
+            ButtonStackView.leadingAnchor.constraint(equalTo: mainStackView.leadingAnchor),
+            ButtonStackView.trailingAnchor.constraint(equalTo: mainStackView.trailingAnchor)
+        ])
     }
     
-    func initWorkTimeLabel() {
+    private func initWorkTimeLabel() {
         let workTimeLable = UILabel()
         workTimeLable.text = "업무 시간 - 00:00:000"
         workTimeLable.font = UIFont.systemFont(ofSize: 20)
@@ -69,7 +74,7 @@ class ViewController: UIViewController {
         mainStackView.addArrangedSubview(workTimeLable)
     }
     
-    func makeTitleLabel(text: String, color: UIColor) -> UILabel {
+    private func makeTitleLabel(text: String, color: UIColor) -> UILabel {
         let newLabel = UILabel()
         newLabel.text = text
         newLabel.textColor = UIColor.white
@@ -79,7 +84,7 @@ class ViewController: UIViewController {
         return newLabel
     }
     
-    func initWaitingStackView() {
+    private func initWaitingStackView() {
         let waitingStackView = UIStackView()
         waitingStackView.axis = .horizontal
         waitingStackView.alignment = .center
@@ -96,6 +101,36 @@ class ViewController: UIViewController {
         NSLayoutConstraint.activate([
             waitingStackView.leadingAnchor.constraint(equalTo: mainStackView.leadingAnchor),
             waitingStackView.trailingAnchor.constraint(equalTo: mainStackView.trailingAnchor)
+        ])
+    }
+    
+    private func makeCustomerStackView() -> UIStackView {
+        let newCustomerStackView = UIStackView()
+        newCustomerStackView.axis = .vertical
+        newCustomerStackView.alignment = .center
+        return newCustomerStackView
+    }
+    
+    private func initCustomerStackView() {
+        let customerStackView = UIStackView()
+        customerStackView.axis = .horizontal
+        customerStackView.alignment = .center
+        customerStackView.distribution = .fillEqually
+        
+        let waitingStackView = makeCustomerStackView()
+        let tempLabel = UILabel()
+        tempLabel.text = "test"
+        waitingStackView.addArrangedSubview(tempLabel)
+        
+        let workingStackView = makeCustomerStackView()
+        customerStackView.addArrangedSubview(waitingStackView)
+        customerStackView.addArrangedSubview(workingStackView)
+        
+        mainStackView.addArrangedSubview(customerStackView)
+        
+        NSLayoutConstraint.activate([
+            customerStackView.leadingAnchor.constraint(equalTo: mainStackView.leadingAnchor),
+            customerStackView.trailingAnchor.constraint(equalTo: mainStackView.trailingAnchor)
         ])
     }
 }
