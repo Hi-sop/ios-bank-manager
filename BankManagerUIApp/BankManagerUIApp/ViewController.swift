@@ -15,6 +15,8 @@ final class ViewController: UIViewController, CustomerOnScreen {
     
     private var workTimeLable = UILabel()
     private var workTime: Double = 0
+    var timer: Timer!
+    var timerStatus = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,13 +24,14 @@ final class ViewController: UIViewController, CustomerOnScreen {
         bankManager.bank.delegate = self
         DispatchQueue.global().async(execute: { self.bankManager.bank.open() })
         
+        
         initMainStackView()
         initButtonStackView()
         initWorkTimeLabel()
         initWaitingStackView()
         initCustomerStackView()
     }
-
+    
     private func initMainStackView() {
         mainStackView.axis = .vertical
         mainStackView.alignment = .center
@@ -95,6 +98,8 @@ final class ViewController: UIViewController, CustomerOnScreen {
             workingStackView.removeArrangedSubview(label)
             label.removeFromSuperview()
         }
+        workTime = 0
+        workTimeLable.text = "업무 시간 - 00:00:000"
     }
     
     func addScreen(customer: Customer, screen: Screen) {
@@ -139,6 +144,22 @@ final class ViewController: UIViewController, CustomerOnScreen {
         workTimeLable.font = UIFont.systemFont(ofSize: 20)
         
         mainStackView.addArrangedSubview(workTimeLable)
+        
+        timer = Timer.scheduledTimer(withTimeInterval: 0.001, repeats: true, block: { _ in
+            if self.timerStatus {
+                self.workTime += 0.001
+                let formatTime = self.timeFormatter(time: self.workTime)
+                self.workTimeLable.text = "업무 시간 - \(formatTime)"
+            }
+        })
+    }
+    
+    private func timeFormatter(time: Double) -> String {
+            let minutes = Int(time / 60)
+            let seconds = Int(time.truncatingRemainder(dividingBy: 60))
+            let milliseconds = Int((time * 1000).truncatingRemainder(dividingBy: 1000))
+
+            return String(format: "%02d:%02d:%03d", minutes, seconds, milliseconds)
     }
     
     private func makeTitleLabel(text: String, color: UIColor) -> UILabel {

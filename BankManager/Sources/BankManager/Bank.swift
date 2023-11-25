@@ -10,6 +10,7 @@ import Foundation
 public protocol CustomerOnScreen {
     func addScreen(customer: Customer, screen: Screen)
     func deleteScreen(customer: Customer, screen: Screen)
+    var timerStatus: Bool { get set }
 }
 
 public final class Bank {
@@ -43,7 +44,7 @@ public final class Bank {
     
     public func open() {
         employeesWork()
-        //endWork()
+        endWork()
     }
     
     public func clickAddCustomer() {
@@ -100,6 +101,7 @@ public final class Bank {
                 
                 WorkReport.startWork(customer: customer)
                 
+                delegate?.timerStatus = true
                 Thread.sleep(forTimeInterval: employees.business.workTime)
                 
                 BankSemaphore.wait()
@@ -107,8 +109,9 @@ public final class Bank {
                 customerCount += 1
                 BankSemaphore.signal()
                 
-                
+                delegate?.timerStatus = false
                 WorkReport.endWork(customer: customer)
+                
                 DispatchQueue.main.sync(execute: {
                     delegate?.deleteScreen(customer: customer, screen: .working)
                 })
@@ -116,11 +119,11 @@ public final class Bank {
         })
     }
     
-//    private func endWork() {
-//        WorkReport.endWorkString(customerCount: customerCount, workTime: workTime)
-//        customerCount = 0
-//        workTime = 0
-//    }
+    private func endWork() {
+        WorkReport.endWorkString(customerCount: customerCount, workTime: workTime)
+        customerCount = 0
+        workTime = 0
+    }
     
     private func addCustomer() {
         let count = 10
@@ -136,6 +139,7 @@ public final class Bank {
         customerCount = 0
         customerNumber = 1
         workTime = 0
+        delegate?.timerStatus = false
         customerQueue.clear()
         depositQueue.clear()
         loanQueue.clear()
