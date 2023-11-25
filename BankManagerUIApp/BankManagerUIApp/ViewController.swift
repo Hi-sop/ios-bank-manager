@@ -7,7 +7,7 @@
 import UIKit
 import BankManager
 
-class ViewController: UIViewController {
+final class ViewController: UIViewController, CustomerOnScreen {
     private var bankManager = BankManager(bankName: "Hisop")
     private var mainStackView = UIStackView()
     private var waitingStackView = UIStackView()
@@ -18,6 +18,9 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        bankManager.bank.delegate = self
+        DispatchQueue.global().async(execute: { self.bankManager.bank.open() })
         
         initMainStackView()
         initButtonStackView()
@@ -77,12 +80,58 @@ class ViewController: UIViewController {
     
     @objc
     private func touchUpInsideAddCustomer() {
-        print("Add")
+        bankManager.bank.clickAddCustomer()
     }
     
     @objc
     private func touchUpInsideReset() {
-        print("Reset")
+        bankManager.bank.reset()
+        for label in waitingStackView.arrangedSubviews {
+            waitingStackView.removeArrangedSubview(label)
+            label.removeFromSuperview()
+        }
+        
+        for label in workingStackView.arrangedSubviews {
+            workingStackView.removeArrangedSubview(label)
+            label.removeFromSuperview()
+        }
+    }
+    
+    func addScreen(customer: Customer, screen: Screen) {
+        let newLabel = UILabel()
+        var stackView: UIStackView
+        
+        switch screen {
+        case .waiting:
+            stackView = waitingStackView
+        case .working:
+            stackView = workingStackView
+        }
+        
+        if customer.business == .loan {
+            newLabel.textColor = UIColor.systemPurple
+        }
+        newLabel.font = UIFont.systemFont(ofSize: 20)
+        newLabel.tag = customer.number
+        newLabel.text = "\(customer.number) - \(customer.business.rawValue)"
+        stackView.addArrangedSubview(newLabel)
+        stackView.layoutIfNeeded()
+    }
+    
+    func deleteScreen(customer: Customer, screen: Screen) {
+        var stackView: UIStackView
+        
+        switch screen {
+        case .waiting:
+            stackView = waitingStackView
+        case .working:
+            stackView = workingStackView
+        }
+        
+        if let index = stackView.arrangedSubviews.firstIndex(where: { $0.tag == customer.number} ) {
+            stackView.arrangedSubviews[index].removeFromSuperview()
+        }
+        stackView.layoutIfNeeded()
     }
     
     private func initWorkTimeLabel() {
@@ -133,7 +182,7 @@ class ViewController: UIViewController {
     private func initCustomerStackView() {
         let customerStackView = UIStackView()
         customerStackView.axis = .horizontal
-        customerStackView.alignment = .center
+        customerStackView.alignment = .top
         customerStackView.distribution = .fillEqually
         
         initStackView()

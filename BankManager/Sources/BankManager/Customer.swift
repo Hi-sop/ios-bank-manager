@@ -6,8 +6,8 @@
 //
 
 public struct Customer {
-    private(set) var number: Int
-    private(set) var business: Business
+    public var number: Int
+    public var business: Business
     
     init(number: Int) {
         self.number = number

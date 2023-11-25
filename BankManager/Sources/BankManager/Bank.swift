@@ -7,10 +7,17 @@
 
 import Foundation
 
+public protocol CustomerOnScreen {
+    func addScreen(customer: Customer, screen: Screen)
+    func deleteScreen(customer: Customer, screen: Screen)
+}
+
 public final class Bank {
     private var name: String
     private var customerCount: Int = 0
-    private var workTime: Double = 0
+    private(set) var workTime: Double = 0
+    private var customerNumber: Int = 1
+    private var isOpen: Bool = true
     
     private let customerQueue = CustomerQueue<Customer>()
     private let depositQueue = CustomerQueue<Customer>()
@@ -19,8 +26,10 @@ public final class Bank {
     private let depositSemaphore = DispatchSemaphore(value: 1)
     private let loanSemaphore = DispatchSemaphore(value: 1)
     private let BankSemaphore = DispatchSemaphore(value: 1)
+    private let group = DispatchGroup()
     
     private var employeesList: [Employees] = []
+    public var delegate: CustomerOnScreen?
     
     init(name: String, chargeDepositCount: Int, chargeLoanCount: Int) {
         self.name = name
@@ -33,10 +42,13 @@ public final class Bank {
     }
     
     public func open() {
+        employeesWork()
+        //endWork()
+    }
+    
+    public func clickAddCustomer() {
         addCustomer()
         addQueue()
-        employeesWork()
-        endWork()
     }
     
     private func addQueue() {
@@ -46,16 +58,18 @@ public final class Bank {
             }
             switch customer.business {
             case .deposit:
+                depositSemaphore.wait()
                 depositQueue.enqueue(value: customer)
+                depositSemaphore.signal()
             case .loan:
+                loanSemaphore.wait()
                 loanQueue.enqueue(value: customer)
+                loanSemaphore.signal()
             }
         }
     }
     
     private func employeesWork() {
-        let group = DispatchGroup()
-        
         for employees in employeesList {
             DispatchQueue.global().async(group: group, execute: makeWork(employees: employees))
         }
@@ -71,14 +85,21 @@ public final class Bank {
             case .loan:
                 queue = loanQueue
             }
-            while queue.isEmpty() == false {
+            while isOpen {
                 employees.semaphore.wait()
                 guard let customer = queue.dequeue() else {
-                    return
+                    employees.semaphore.signal()
+                    continue
                 }
                 employees.semaphore.signal()
+
+                DispatchQueue.main.sync(execute: {
+                    delegate?.deleteScreen(customer: customer, screen: .waiting)
+                    delegate?.addScreen(customer: customer, screen: .working)
+                })
                 
                 WorkReport.startWork(customer: customer)
+                
                 Thread.sleep(forTimeInterval: employees.business.workTime)
                 
                 BankSemaphore.wait()
@@ -86,21 +107,37 @@ public final class Bank {
                 customerCount += 1
                 BankSemaphore.signal()
                 
+                
                 WorkReport.endWork(customer: customer)
+                DispatchQueue.main.sync(execute: {
+                    delegate?.deleteScreen(customer: customer, screen: .working)
+                })
             }
         })
     }
     
-    private func endWork() {
-        WorkReport.endWorkString(customerCount: customerCount, workTime: workTime)
-        customerCount = 0
-        workTime = 0
-    }
+//    private func endWork() {
+//        WorkReport.endWorkString(customerCount: customerCount, workTime: workTime)
+//        customerCount = 0
+//        workTime = 0
+//    }
     
     private func addCustomer() {
-        let count = Int.random(in: 10...30)
-        for number in 1...count {
-            customerQueue.enqueue(value: Customer(number: number))
+        let count = 10
+        for number in customerNumber...customerNumber + count - 1 {
+            let newCustomer = Customer(number: number)
+            customerQueue.enqueue(value: newCustomer)
+            delegate?.addScreen(customer: newCustomer, screen: .waiting)
         }
+        customerNumber += count
+    }
+    
+    public func reset() {
+        customerCount = 0
+        customerNumber = 1
+        workTime = 0
+        customerQueue.clear()
+        depositQueue.clear()
+        loanQueue.clear()
     }
 }
