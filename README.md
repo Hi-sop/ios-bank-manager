@@ -84,7 +84,7 @@ DispatchQueue.global().async(execute: { self.bankManager.bank.open() })
 ```
 은행의 문을 열 때 메인스레드에서 호출하지 않도록 변경하여 메인스레드가 정상적으로 UI갱신을 할 수 있도록 했다.
 
-### Operation의 스레드 생성
+#### Operation의 스레드 생성
 Bank의 동작을 처음 구현할 때 GCD를 사용했다. 리팩토링과정에서 코드의 간결함, 가독성을 이유로 Operation으로 리팩토링했다.
 실제 동작에는 변화가 없었지만 스레드의 동작이 차이가 있었다.
 
